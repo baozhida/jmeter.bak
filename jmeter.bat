@@ -31,6 +31,8 @@ setlocal
 rem Minimal version to run JMeter
 set MINIMAL_VERSION=1.7.0
 
+set JVM_ARGS=-Dfile.encoding=UTF8
+
 for /f "tokens=3" %%g in ('java -version 2^>^&1 ^| findstr /i "version"') do (
     rem @echo Debug Output: %%g
     set JAVAVER=%%g
@@ -78,8 +80,8 @@ rem https://web.archive.org/web/20090614101951/http://java.sun.com/developer/Tec
 
 rem See the unix startup file for the rationale of the following parameters,
 rem including some tuning recommendations
-set HEAP=-Xms512m -Xmx512m
-set NEW=-XX:NewSize=128m -XX:MaxNewSize=128m
+set HEAP=-Xms1024m -Xmx1024m
+set NEW=-XX:NewSize=512m -XX:MaxNewSize=512m
 set SURVIVOR=-XX:SurvivorRatio=8 -XX:TargetSurvivorRatio=50%
 set TENURING=-XX:MaxTenuringThreshold=2
 rem Java 8 remove Permanent generation, don't settings the PermSize
