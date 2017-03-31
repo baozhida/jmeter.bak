@@ -74,7 +74,7 @@ public class JavaMailTask {
 			+ "</tr>"
 			+ "</table></body></html>", "text/html;charset=utf-8");
 		// 设置发件人
-		msg.setFrom(new InternetAddress("apiauto@tuniu.com"));
+		msg.setFrom(new InternetAddress("apiauto@xxx.com"));
 		
 		// 设置收件人
 			
@@ -94,6 +94,6 @@ public class JavaMailTask {
 	//测试
 	public static void main(String[] args) throws MessagingException {
 
-		sendMail(5,5,0,"接口报告","baozhida@tuniu.com,tengaiqing@tuniu.com");
+		sendMail(100,89,11,"接口报告","aaa@xxx.com,bbb@xxx.com");
 	}
 }
