@@ -15,9 +15,12 @@
  */
 package org.programmerplanet.ant.taskdefs.jmeter;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -131,10 +134,6 @@ public class JMeterTask extends Task {
 	 */
 	private ArrayList resultLogFiles = new ArrayList();
 	
-	
-	private String mailAddress=null;
-	
-	private String mailSubject=null;
 
 	/**
 	 * @see org.apache.tools.ant.Task#execute()
@@ -183,14 +182,6 @@ public class JMeterTask extends Task {
 		}
 
 		checkForFailures();
-		try {
-			if (mailAddress != null){
-			analyseResultLog();
-			}
-		} catch (MessagingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		
 	}
 
@@ -232,47 +223,6 @@ public class JMeterTask extends Task {
 	}
 	
 	
-	/**
-	 * 计算统计数据
-	 * @throws MessagingException 
-	 */
-	private void analyseResultLog() throws BuildException, MessagingException {
-		int successnum = 0;
-		int failnum = 0;
-		for (Iterator i = resultLogFiles.iterator(); i.hasNext();) {
-			File resultLogFile = (File)i.next();
-			log("Checking result log file " + resultLogFile.getName() + ".", Project.MSG_VERBOSE);
-			LineNumberReader reader = null;
-			try {
-				reader = new LineNumberReader(new FileReader(resultLogFile));
-				String line = null;
-				while ((line = reader.readLine()) != null) {
-					// set failure property if there are failures
-					if (line.indexOf("<httpSample") !=-1) {
-						if (line.indexOf(" s=\"true\"") !=-1) {
-							successnum = successnum + 1;
-						}else{
-							failnum = failnum + 1;
-						}
-					}
-				}
-				if(successnum+failnum > 0){
-					JavaMailTask.sendMail(successnum+failnum,  successnum, failnum, mailSubject, mailAddress);
-				}
-			}
-			catch (IOException e) {
-				throw new BuildException("Could not read jmeter resultLog: " + e.getMessage());
-			}
-			finally {
-				try {
-					reader.close();
-				}
-				catch (Exception e) { /* ignore */
-				}
-			}
-		}
-	}
-
 	/**
 	 * Validate the task attributes.
 	 */
@@ -497,22 +447,6 @@ public class JMeterTask extends Task {
 
 	public void setFailure(String failureProperty) {
 		getProject().setProperty(failureProperty, "true");
-	}
-	
-	public void setMailAddress(String mailAddress) {
-		this.mailAddress = mailAddress;
-	}
-
-	public String getMailAddress() {
-		return mailAddress;
-	}
-	
-	public void setMailSubject(String mailSubject) {
-		this.mailSubject = mailSubject;
-	}
-
-	public String getMailSubject() {
-		return mailSubject;
 	}
 
 }
