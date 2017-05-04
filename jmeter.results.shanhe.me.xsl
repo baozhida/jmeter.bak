@@ -51,13 +51,12 @@
 					font-weight: bold;
 					text-align:center;
 					background:#2674a6;
-					
+					line-height:2em;					
 				}
-				table.details tr td{
-					background:#eeeee0;
-				}
-
 				
+				table.details tr:nth-child(odd){background:#FFFFFF;border:1px solid #CCC;line-height:2em;}
+				table.details tr:nth-child(even){background:#EDF3FE;border:1px solid #CCC;line-height:2em;}
+				table.details td{border:1px solid black;}
 				.Failure {
 					font-weight:bold; color:red;
 				}
@@ -82,6 +81,7 @@
                 #right-panel { position: absolute; right: 0; top: 0; bottom: 0; left: 30%; overflow: auto; background: white }
                 #right-panel .group { font-size: 12px; font-weight: bold; line-height: 16px; padding: 0 0 0 18px; counter-reset: assertion; background-repeat: repeat-x; background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAQCAYAAADXnxW3AAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9sDEBUkDq8pxjkAAAAdaVRYdENvbW1lbnQAAAAAAENyZWF0ZWQgd2l0aCBHSU1QZC5lBwAAADdJREFUCNdVxrERwDAMAzGK0v47eS6Z927SpMFBAAbkvSvnRk5+7K5cVfLMyN39bWakJAjA5xw9R94jN3tVhVEAAAAASUVORK5CYII=) }
                 #right-panel .zebra { background-repeat: repeat; padding: 0 0 0 18px; background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAmCAYAAAAFvPEHAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9sDEBYWFlNztEcAAAAdaVRYdENvbW1lbnQAAAAAAENyZWF0ZWQgd2l0aCBHSU1QZC5lBwAAABdJREFUCNdjYKAtePv5338mBgYGBpoQAGy1BAJlb/y6AAAAAElFTkSuQmCC) }
+				
                 #right-panel .data { line-height: 19px; }
                 #right-panel pre.data { white-space: pre }
                 #right-panel tbody.failure { color: red }
@@ -163,12 +163,32 @@
                     if(o)
                         onclick_li(o);
                 };
+
+				function checkfailure() {
+					if (document.getElementById("bt").innerHTML == "查看失败") {
+						document.getElementById("bt").innerHTML = "查看全部";
+						var trs = document.getElementsByTagName("table")[1].getElementsByTagName('tr');
+						for( var i = 1; i < trs.length; i++ ) {
+							var tr = trs[i];
+							if( "Failure" != tr.className )
+								tr.style.display = 'none';
+						}
+					}else if(document.getElementById("bt").innerHTML == "查看全部") {
+						document.getElementById("bt").innerHTML = "查看失败";
+						var trs = document.getElementsByTagName("table")[1].getElementsByTagName('tr');
+						for( var i = 1; i < trs.length; i++ ) {
+							var tr = trs[i];
+							if( "Failure" != tr.className )
+								tr.style.display = '';
+						}
+                    }
+				};
         
             ]]></script>
         </head>
         <body>
 			<h2>Summary</h2>
-			<table  align="center" class="details" border="1" cellpadding="5" cellspacing="2" width="100%" >
+			<table  align="center" class="details" cellpadding="5" cellspacing="2" width="100%" >
 				<tr valign="top">
 					<th>执行总数</th>
 					<th>成功数</th>
@@ -231,8 +251,9 @@
 					</td>
 				</tr>
 			</table>
+			<button class="button" id="bt" onclick="checkfailure()" style="float:right">查看失败</button>
 			<h2>Pages</h2>
-			<table align="center" class="details" border="1" cellpadding="5" cellspacing="2" width="100%">
+			<table align="center" class="details" cellpadding="5" cellspacing="2" width="100%">
 				<tr valign="top">
 					<th width="30%">URL</th>
 					<th>执行总数</th>
@@ -303,8 +324,8 @@
 			<div id="panel-wrap">
             <div id="left-panel">
                 <ol id="result-list">
-					<!-- 只把失败的生成html -*[attribute::s='false']-->
-                    <xsl:for-each select="*">
+					<!-- 只把失败的生成html -->
+                    <xsl:for-each select="*[attribute::s='false']">
                         <!-- group with the previous sibling -->
                         <xsl:if test="position() = 1 or @tn != preceding-sibling::*[1]/@tn">
                             <li class="navigation">Thread: <xsl:value-of select="@tn"/></li>
